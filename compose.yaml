@@ -1,0 +1,63 @@
+name: jungle-wallet-service
+
+services:
+  postgres:
+    image: postgres:17.11-bookworm
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-jungle_wallet}
+      POSTGRES_USER: ${POSTGRES_USER:-jungle_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Copy .env.example to .env before starting}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+    stop_grace_period: 30s
+
+  localstack:
+    image: localstack/localstack:4.14.0@sha256:3ebc37595918b8accb852f8048fef2aff047d465167edd655528065b07bc364a
+    environment:
+      SERVICES: sqs
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      LOCALSTACK_HOST: "127.0.0.1:${SQS_PORT:-4566}"
+      SQS_ENDPOINT_STRATEGY: path
+    ports:
+      - "127.0.0.1:${SQS_PORT:-4566}:4566"
+    volumes:
+      - ./deploy/localstack/ready.sh:/etc/localstack/init/ready.d/ready.sh:ro
+    healthcheck:
+      test: ["CMD", "awslocal", "sqs", "get-queue-url", "--queue-name", "wager-transactions.fifo"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 15s
+    stop_grace_period: 20s
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.8.0@sha256:27b3230fbabb8c9ff3c66c864cf09dcd8a41aca82e5100679d109ef0eeb05741
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_HOSTNAME: "http://127.0.0.1:${KEYCLOAK_PORT:-8081}"
+      KC_HEALTH_ENABLED: "true"
+    ports:
+      - "127.0.0.1:${KEYCLOAK_PORT:-8081}:8080"
+    volumes:
+      - ./deploy/keycloak/jungle-wallet-realm.json:/opt/keycloak/data/import/jungle-wallet-realm.json:ro
+      - ./deploy/keycloak/healthcheck.sh:/opt/keycloak/healthcheck.sh:ro
+    healthcheck:
+      test: ["CMD", "bash", "/opt/keycloak/healthcheck.sh"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+      start_period: 30s
+    stop_grace_period: 20s
+
+volumes:
+  postgres_data:

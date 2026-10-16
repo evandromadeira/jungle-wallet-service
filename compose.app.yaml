@@ -1,0 +1,83 @@
+# Full local application overlay. Use with compose.yaml.
+services:
+  localstack:
+    environment:
+      LOCALSTACK_HOST: localstack:4566
+  keycloak:
+    environment:
+      KC_HOSTNAME: http://keycloak:8080
+  db-roles:
+    image: postgres:17.11-bookworm
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment: &admin_environment
+      PGHOST: postgres
+      PGDATABASE: ${POSTGRES_DB:-jungle_wallet}
+      PGUSER: ${POSTGRES_USER:-jungle_admin}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      WALLET_MIGRATOR_USER: ${WALLET_MIGRATOR_USER:-jungle_migrator}
+      WALLET_WORKER_USER: ${WALLET_WORKER_USER:-jungle_worker}
+      WALLET_MIGRATOR_PASSWORD: ${WALLET_MIGRATOR_PASSWORD:-local-migrator-only}
+      WALLET_WORKER_PASSWORD: ${WALLET_WORKER_PASSWORD:-local-worker-only}
+    volumes:
+      - ./deploy/postgres:/setup:ro
+    command: ["psql", "-X", "-v", "ON_ERROR_STOP=1", "-f", "/setup/roles.sql"]
+    restart: "no"
+  migrate:
+    build: .
+    depends_on:
+      db-roles:
+        condition: service_completed_successfully
+    environment:
+      WALLET_MIGRATION_DATABASE_URL: host=postgres sslmode=disable
+      PGDATABASE: ${POSTGRES_DB:-jungle_wallet}
+      PGUSER: ${WALLET_MIGRATOR_USER:-jungle_migrator}
+      PGPASSWORD: ${WALLET_MIGRATOR_PASSWORD:-local-migrator-only}
+    command: ["wallet-migrate", "up"]
+    restart: "no"
+  db-grants:
+    image: postgres:17.11-bookworm
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment: *admin_environment
+    volumes:
+      - ./deploy/postgres:/setup:ro
+    command: ["psql", "-X", "-v", "ON_ERROR_STOP=1", "-f", "/setup/grants.sql"]
+    restart: "no"
+  app:
+    build: .
+    depends_on:
+      db-grants:
+        condition: service_completed_successfully
+      localstack:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    environment:
+      WALLET_DATABASE_URL: host=postgres sslmode=disable
+      PGDATABASE: ${POSTGRES_DB:-jungle_wallet}
+      PGUSER: ${WALLET_WORKER_USER:-jungle_worker}
+      PGPASSWORD: ${WALLET_WORKER_PASSWORD:-local-worker-only}
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      WALLET_SQS_ENDPOINT: http://localstack:4566
+      WALLET_INPUT_QUEUE_URL: http://localstack:4566/queue/us-east-1/000000000000/wager-transactions.fifo
+      WALLET_OUTPUT_QUEUE_URL: http://localstack:4566/queue/us-east-1/000000000000/jungle-wallet-events
+      WALLET_PROVIDER_ID: provider-a
+      WALLET_CONSUMER_NAME: wagers-provider-a
+      WALLET_HTTP_ADDRESS: 0.0.0.0:8080
+      WALLET_OIDC_ISSUER: http://keycloak:8080/realms/jungle-wallet
+      WALLET_OIDC_AUDIENCE: wallet-api
+    ports:
+      - "127.0.0.1:${WALLET_HTTP_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8080/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+    stop_grace_period: 25s

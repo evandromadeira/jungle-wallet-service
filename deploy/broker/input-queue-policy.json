@@ -1,0 +1,21 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyUnapprovedProducers",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "sqs:SendMessage",
+      "Resource": "arn:aws:sqs:REGION:ACCOUNT_ID:wager-transactions.fifo",
+      "Condition": {"ArnNotEquals": {"aws:PrincipalArn": "PRODUCER_ROLE_ARN"}}
+    },
+    {
+      "Sid": "DenyUnapprovedConsumers",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": ["sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:ChangeMessageVisibility"],
+      "Resource": "arn:aws:sqs:REGION:ACCOUNT_ID:wager-transactions.fifo",
+      "Condition": {"ArnNotEquals": {"aws:PrincipalArn": "WORKER_ROLE_ARN"}}
+    }
+  ]
+}

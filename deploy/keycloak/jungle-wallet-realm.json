@@ -1,0 +1,223 @@
+{
+    "sslRequired":  "none",
+    "enabled":  true,
+    "registrationAllowed":  false,
+    "clients":  [
+                    {
+                        "fullScopeAllowed":  false,
+                        "secret":  "local-provider-a-only",
+                        "clientAuthenticatorType":  "client-secret",
+                        "optionalClientScopes":  [
+
+                                                 ],
+                        "implicitFlowEnabled":  false,
+                        "protocolMappers":  [
+                                                {
+                                                    "protocolMapper":  "oidc-audience-mapper",
+                                                    "protocol":  "openid-connect",
+                                                    "name":  "wallet-api-audience",
+                                                    "config":  {
+                                                                   "access.token.claim":  "true",
+                                                                   "included.custom.audience":  "wallet-api",
+                                                                   "id.token.claim":  "false"
+                                                               }
+                                                },
+                                                {
+                                                    "protocolMapper":  "oidc-hardcoded-claim-mapper",
+                                                    "protocol":  "openid-connect",
+                                                    "name":  "service-role",
+                                                    "config":  {
+                                                                   "jsonType.label":  "String",
+                                                                   "claim.value":  "provider",
+                                                                   "claim.name":  "serviceRole",
+                                                                   "id.token.claim":  "false",
+                                                                   "access.token.claim":  "true"
+                                                               }
+                                                },
+                                                {
+                                                    "protocolMapper":  "oidc-hardcoded-claim-mapper",
+                                                    "protocol":  "openid-connect",
+                                                    "name":  "provider-identity",
+                                                    "config":  {
+                                                                   "jsonType.label":  "String",
+                                                                   "claim.value":  "provider-a",
+                                                                   "claim.name":  "providerId",
+                                                                   "id.token.claim":  "false",
+                                                                   "access.token.claim":  "true"
+                                                               }
+                                                }
+                                            ],
+                        "standardFlowEnabled":  false,
+                        "publicClient":  false,
+                        "clientId":  "provider-a",
+                        "enabled":  true,
+                        "protocol":  "openid-connect",
+                        "serviceAccountsEnabled":  true,
+                        "defaultClientScopes":  [
+
+                                                ],
+                        "directAccessGrantsEnabled":  false
+                    },
+                    {
+                        "fullScopeAllowed":  false,
+                        "secret":  "local-provider-b-only",
+                        "clientAuthenticatorType":  "client-secret",
+                        "optionalClientScopes":  [
+
+                                                 ],
+                        "implicitFlowEnabled":  false,
+                        "protocolMappers":  [
+                                                {
+                                                    "protocolMapper":  "oidc-audience-mapper",
+                                                    "protocol":  "openid-connect",
+                                                    "name":  "wallet-api-audience",
+                                                    "config":  {
+                                                                   "access.token.claim":  "true",
+                                                                   "included.custom.audience":  "wallet-api",
+                                                                   "id.token.claim":  "false"
+                                                               }
+                                                },
+                                                {
+                                                    "protocolMapper":  "oidc-hardcoded-claim-mapper",
+                                                    "protocol":  "openid-connect",
+                                                    "name":  "service-role",
+                                                    "config":  {
+                                                                   "jsonType.label":  "String",
+                                                                   "claim.value":  "provider",
+                                                                   "claim.name":  "serviceRole",
+                                                                   "id.token.claim":  "false",
+                                                                   "access.token.claim":  "true"
+                                                               }
+                                                },
+                                                {
+                                                    "protocolMapper":  "oidc-hardcoded-claim-mapper",
+                                                    "protocol":  "openid-connect",
+                                                    "name":  "provider-identity",
+                                                    "config":  {
+                                                                   "jsonType.label":  "String",
+                                                                   "claim.value":  "provider-b",
+                                                                   "claim.name":  "providerId",
+                                                                   "id.token.claim":  "false",
+                                                                   "access.token.claim":  "true"
+                                                               }
+                                                }
+                                            ],
+                        "standardFlowEnabled":  false,
+                        "publicClient":  false,
+                        "clientId":  "provider-b",
+                        "enabled":  true,
+                        "protocol":  "openid-connect",
+                        "serviceAccountsEnabled":  true,
+                        "defaultClientScopes":  [
+
+                                                ],
+                        "directAccessGrantsEnabled":  false
+                    },
+                    {
+                        "fullScopeAllowed":  false,
+                        "secret":  "local-wallet-internal-only",
+                        "clientAuthenticatorType":  "client-secret",
+                        "optionalClientScopes":  [
+
+                                                 ],
+                        "implicitFlowEnabled":  false,
+                        "protocolMappers":  [
+                                                {
+                                                    "protocolMapper":  "oidc-audience-mapper",
+                                                    "protocol":  "openid-connect",
+                                                    "name":  "wallet-api-audience",
+                                                    "config":  {
+                                                                   "access.token.claim":  "true",
+                                                                   "included.custom.audience":  "wallet-api",
+                                                                   "id.token.claim":  "false"
+                                                               }
+                                                },
+                                                {
+                                                    "protocolMapper":  "oidc-hardcoded-claim-mapper",
+                                                    "protocol":  "openid-connect",
+                                                    "name":  "service-role",
+                                                    "config":  {
+                                                                   "jsonType.label":  "String",
+                                                                   "claim.value":  "internal",
+                                                                   "claim.name":  "serviceRole",
+                                                                   "id.token.claim":  "false",
+                                                                   "access.token.claim":  "true"
+                                                               }
+                                                }
+                                            ],
+                        "standardFlowEnabled":  false,
+                        "publicClient":  false,
+                        "clientId":  "wallet-internal",
+                        "enabled":  true,
+                        "protocol":  "openid-connect",
+                        "serviceAccountsEnabled":  true,
+                        "defaultClientScopes":  [
+
+                                                ],
+                        "directAccessGrantsEnabled":  false
+                    },
+                    {
+                        "fullScopeAllowed":  false,
+                        "secret":  "local-provider-expiry-only",
+                        "clientAuthenticatorType":  "client-secret",
+                        "optionalClientScopes":  [
+
+                                                 ],
+                        "implicitFlowEnabled":  false,
+                        "protocolMappers":  [
+                                                {
+                                                    "protocolMapper":  "oidc-audience-mapper",
+                                                    "protocol":  "openid-connect",
+                                                    "name":  "wallet-api-audience",
+                                                    "config":  {
+                                                                   "access.token.claim":  "true",
+                                                                   "included.custom.audience":  "wallet-api",
+                                                                   "id.token.claim":  "false"
+                                                               }
+                                                },
+                                                {
+                                                    "protocolMapper":  "oidc-hardcoded-claim-mapper",
+                                                    "protocol":  "openid-connect",
+                                                    "name":  "service-role",
+                                                    "config":  {
+                                                                   "jsonType.label":  "String",
+                                                                   "claim.value":  "provider",
+                                                                   "claim.name":  "serviceRole",
+                                                                   "id.token.claim":  "false",
+                                                                   "access.token.claim":  "true"
+                                                               }
+                                                },
+                                                {
+                                                    "protocolMapper":  "oidc-hardcoded-claim-mapper",
+                                                    "protocol":  "openid-connect",
+                                                    "name":  "provider-identity",
+                                                    "config":  {
+                                                                   "jsonType.label":  "String",
+                                                                   "claim.value":  "provider-a",
+                                                                   "claim.name":  "providerId",
+                                                                   "id.token.claim":  "false",
+                                                                   "access.token.claim":  "true"
+                                                               }
+                                                }
+                                            ],
+                        "standardFlowEnabled":  false,
+                        "publicClient":  false,
+                        "clientId":  "provider-expiry-test",
+                        "enabled":  true,
+                        "protocol":  "openid-connect",
+                        "serviceAccountsEnabled":  true,
+                        "defaultClientScopes":  [
+
+                                                ],
+                        "directAccessGrantsEnabled":  false,
+                        "attributes":  {
+                                           "access.token.lifespan":  "5"
+                                       }
+                    }
+                ],
+    "accessTokenLifespan":  300,
+    "loginWithEmailAllowed":  false,
+    "resetPasswordAllowed":  false,
+    "defaultSignatureAlgorithm":  "RS256",
+    "realm":  "jungle-wallet"
+}

@@ -1,0 +1,23 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ConsumeProviderWagers",
+      "Effect": "Allow",
+      "Action": ["sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:ChangeMessageVisibility", "sqs:GetQueueAttributes"],
+      "Resource": "arn:aws:sqs:REGION:ACCOUNT_ID:wager-transactions.fifo"
+    },
+    {
+      "Sid": "PublishFinancialEvents",
+      "Effect": "Allow",
+      "Action": ["sqs:SendMessage", "sqs:GetQueueAttributes"],
+      "Resource": "arn:aws:sqs:REGION:ACCOUNT_ID:jungle-wallet-events"
+    },
+    {
+      "Sid": "ObserveDeadLetters",
+      "Effect": "Allow",
+      "Action": ["sqs:GetQueueUrl", "sqs:GetQueueAttributes"],
+      "Resource": "arn:aws:sqs:REGION:ACCOUNT_ID:wager-transactions-dlq.fifo"
+    }
+  ]
+}
